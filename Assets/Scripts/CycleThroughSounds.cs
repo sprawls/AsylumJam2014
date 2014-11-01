@@ -12,6 +12,7 @@ public class CycleThroughSounds : MonoBehaviour {
 
 	void Start () {
 		audioSource = gameObject.GetComponent<AudioSource> ();
+		audioSource.volume = 0.8f;
 	}
 	
 	// Update is called once per frame

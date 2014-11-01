@@ -183,6 +183,7 @@ public class Interactable : MonoBehaviour {
 		isScanable = false;
 		if(hasScanResult){
 			CreateResult("Data has been found");
+			manager.ShowGoodPcDialog();
 			isUploadable = true;
 		} else {
 			CreateResult("No data in there");
@@ -270,7 +271,7 @@ public class Interactable : MonoBehaviour {
 			yield return null;
 		}
 		//then , once wait is over
-		manager.canMakeAction = true;
+		manager.ShowPoliceDialog ();
 
 	}
 

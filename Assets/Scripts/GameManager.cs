@@ -7,11 +7,18 @@ public class GameManager : MonoBehaviour {
 	Timer timer;
 	public GameObject Timer_Obj;
 
+
 	Objectives objectives;
+	CycleThroughSounds breathSounds;
 	[HideInInspector] public Map map;
+
+
 	public string playerName = "Patrick";
 
 	public bool canMakeAction = true;
+	public AudioClip clip_stab;
+	public AudioClip clip_phoneError;
+	public AudioClip clip_police;
 
 	//unlocks
 	bool unlockedMap = false;
@@ -41,6 +48,7 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		breathSounds = gameObject.GetComponentInChildren<CycleThroughSounds> ();
 		map = gameObject.GetComponentInChildren<Map> ();
 		CreateListOfPlayerText ();
 		CreateListOfOtherText ();
@@ -125,6 +133,23 @@ public class GameManager : MonoBehaviour {
 			objectives.AddObjective("- Find the data");
 			objectives.RemoveObjective("- Break in the house.");
 		}
+		if(currentPlayerText == 11) {
+			audio.PlayOneShot (clip_stab);
+			breathSounds.audio.volume = 1f;
+		}
+		if(currentPlayerText == 12) {
+			canMakeAction = true;
+		}
+		if(currentOtherText == 12) {
+			breathSounds.audio.volume = 0f;
+			breathSounds.audio.Stop();
+			audio.PlayOneShot (clip_phoneError);
+		}
+		if(currentPlayerText == 16) {
+			audio.PlayOneShot (clip_police);
+		}
+
+
 	}
 	public void AddObjective(string nObjective){
 		objectives.AddObjective(nObjective);
@@ -134,10 +159,30 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ShowBadPCDialog(){
-		currentPlayerText = 7;
-		currentOtherText = 6;
-		currentMaxPlayerText = 9;
+		currentPlayerText = 8;
 		currentOtherText = 7;
+		currentMaxPlayerText = 9;
+		currentMaxOtherText = 7;
+	}
+	public void ShowGoodPcDialog(){
+		currentPlayerText = 13;
+		currentOtherText = 10;
+		currentMaxPlayerText = 13;
+		currentMaxOtherText = 10;
+	}
+	public void ShowPoliceDialog(){
+		canMakeAction = false;
+		currentPlayerText = 10;
+		currentOtherText = 8;
+		currentMaxPlayerText = 12;
+		currentMaxOtherText = 9;
+	}
+	public void ShowUploadDialog(){
+		canMakeAction = false;
+		currentPlayerText = 14;
+		currentOtherText = 11;
+		currentMaxPlayerText = 15;
+		currentMaxOtherText = 11;
 	}
 
 
@@ -180,7 +225,30 @@ public class GameManager : MonoBehaviour {
 		player9.Add ("    . . .");
 		player9.Add ("Alright.");
 		listsOfPlayerText.Add (player9);
-
+		//Dialog Try call police
+		List<string> player10 = new List<string> ();
+		player10.Add ("      Hello ?");
+		listsOfPlayerText.Add (player10);
+		List<string> player11 = new List<string> ();
+		player11.Add ("    Wait !");
+		player11.Add ("    Stop !");
+		listsOfPlayerText.Add (player11);
+		List<string> player12 = new List<string> ();
+		player12.Add ("     . . .");
+		listsOfPlayerText.Add (player12);
+		//Dialog Found good pc
+		List<string> player13 = new List<string> ();
+		player13.Add ("I've got it !");
+		listsOfPlayerText.Add (player13);
+		//Dialog Uploaded Data
+		List<string> player14 = new List<string> ();
+		player14.Add ("It's done. You've got what you want.");
+		listsOfPlayerText.Add (player14);
+		List<string> player15 = new List<string> ();
+		player15.Add ("What ?!?");
+		player15.Add ("What about the deal ?");
+		player15.Add ("     . . . . . .  . . . .");
+		listsOfPlayerText.Add (player15);
 	}
 
 	void CreateListOfOtherText(){
@@ -223,6 +291,27 @@ public class GameManager : MonoBehaviour {
 		List<string> other7 = new List<string> ();
 		other7.Add ("Wronc PC.  Keep looking. Now.");
 		listsOfOtherText.Add (other7);
+		//Dialog Try call police
+		List<string> other8 = new List<string> ();
+		other8.Add ("What the hell are you trying to do here ?");
+		other8.Add ("Did you really think I hadn't thought about that ?");
+		other8.Add ("Let me remind you of what's at stake...");
+		listsOfOtherText.Add (other8);
+		List<string> other9 = new List<string> ();
+		other9.Add ("You've got one last chance now.");
+		other9.Add ("Find.   Me.   That.   Data.");
+		listsOfOtherText.Add (other9);
+		//Dialog Found good pc
+		List<string> other10 = new List<string> ();
+		other10.Add ("Good. Upload it and you're both free.");
+		listsOfOtherText.Add (other10);
+		//Dialog Uploaded Data
+		List<string> other11 = new List<string> ();
+		other11.Add ("Finally.");
+		other11.Add ("Oh . By the way, The police are there.     ");
+		other11.Add ("Thank you. And Goodbye.      ");
+		listsOfOtherText.Add (other11);
+
 	}
 
 }

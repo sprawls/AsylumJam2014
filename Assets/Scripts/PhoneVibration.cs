@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PhoneVibration : MonoBehaviour {
 
-
+	public AudioClip Clip_Confirm;
 	public GameManager manager;
 	public List<Sprite> spriteList; //0 : nothing, 1 : incoming call, 2 : in call
 	public bool hasPressed = false;
@@ -51,6 +51,7 @@ public class PhoneVibration : MonoBehaviour {
 	}
 
 	void PressPhone(){
+
 		StopAllCoroutines ();
 		VibrationCoroutineOn = false;
 		isVibrating = false;
@@ -64,6 +65,7 @@ public class PhoneVibration : MonoBehaviour {
 			newObj.transform.parent = transform.parent;
 			manager.UnlockObjective(newObj.GetComponent<Objectives>());
 		}
+		audio.PlayOneShot (Clip_Confirm);
 	}
 
 	public void StartVibration(){
