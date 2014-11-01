@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class DisplayDialog : MonoBehaviour {
-	
+
+	public GameManager manager;
 	public List<string> StringsToShow;
 	public List<Vector2> Display;
 	public bool skipAutomaticly = false;
@@ -18,22 +19,38 @@ public class DisplayDialog : MonoBehaviour {
 	bool StringShown = false; //is the current string finished showing
 	bool wantToSkip = false; //If true, skip text if possible
 	bool canClickSkip = true; //if false cant click (delay to avoid double clicks!)
-	
+	public bool isInactive = true;
+	public bool NeedToSwitch = false;
 	
 	void Awake() {
 		guiText = gameObject.GetComponent<GUIText> ();
+		manager = gameObject.GetComponentInParent<GameManager> ();
 	}
 	
 	void Start () {
-		StartCoroutine (ShowText ());
-	}
 	
-	// Update is called once per frame
+	}
+
+	void Update() {
+		if(NeedToSwitch == true && isInactive == false) {
+			NeedToSwitch = false;
+			manager.SwitchDialog();
+		}
+	}
+
 	void LateUpdate () {
 		if(Input.GetMouseButtonDown(0) && canClickSkip == true){
 			StartCoroutine(ClickCooldown());
 			wantToSkip = true;
 		}
+	}
+
+	public void StartText(){
+		isInactive = false;
+		StringShown = false;
+		currentString = 0;
+		currentChar = 0;
+		StartCoroutine (ShowText ());
 	}
 	
 	IEnumerator ShowText(){
@@ -46,10 +63,12 @@ public class DisplayDialog : MonoBehaviour {
 				yield return null;
 			}
 		}
+		NeedToSwitch = true;
 	}
 	
 	IEnumerator ShowString(object[] parms){
 		string myString = (string) parms [0];
+		wantToSkip = false;
 		for(int i=0; i< myString.Length; i++) {
 			currentText += myString[i];
 			guiText.text = currentText;
@@ -61,7 +80,7 @@ public class DisplayDialog : MonoBehaviour {
 		
 		//After is shown 
 		if(skipAutomaticly == true) {
-			yield return new WaitForSeconds (0.75f);
+			yield return new WaitForSeconds (1.0f);
 		} else {
 			while(true) {
 				if(Input.GetMouseButtonDown(0) && canClickSkip == true) {
@@ -71,8 +90,8 @@ public class DisplayDialog : MonoBehaviour {
 				yield return null;
 			}
 		}
-		
 		StringShown = true;
+
 	}
 	
 	IEnumerator ClickCooldown(){
@@ -80,6 +99,6 @@ public class DisplayDialog : MonoBehaviour {
 		yield return new WaitForSeconds(0.1f);
 		canClickSkip = true;
 	}
-	
+
 	
 }

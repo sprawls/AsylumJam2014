@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: a7fbd8fedb6ce664fa93d19b3136b955
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - BreakAudioClip: {fileID: 8300000, guid: 1d7a9ae06eef87a4f83c23856cd11c4c, type: 3}
+  - ProgressBarPrefab: {fileID: 100002, guid: 1db9a57c088cafb43bee721c4ced698e, type: 2}
+  - ProgressResultPrefab: {fileID: 100002, guid: 0ce624f1c3ac9c646a31ca2c364b9f28,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

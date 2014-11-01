@@ -4,26 +4,35 @@ using System.Collections.Generic;
 
 public class PhoneVibration : MonoBehaviour {
 
+
+	public GameManager manager;
 	public List<Sprite> spriteList; //0 : nothing, 1 : incoming call, 2 : in call
 	public bool hasPressed = false;
 	public bool isVibrating = false;
 	private bool VibrationCoroutineOn = false;
 	SpriteRenderer spriteRenderer;
+	CycleThroughSounds breathingSounds;
 
 	//coroutine animation var
 	Vector3 startingRot, maxRot, minRot;
 	public float angleDiff = 2.5f; //amount of angle between min and rot
 	public float speed = 1f;
 
+	//SPawn objects
+	public GameObject objectivePrefab;
+	private bool hasSpawnedObjects = false;
 
 
 
 	// Use this for initialization
 	void Start () {
+		manager = gameObject.GetComponentInParent<GameManager> ();
+		breathingSounds = (CycleThroughSounds) gameObject.GetComponentInChildren<CycleThroughSounds> ();
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		startingRot = transform.localRotation.eulerAngles;
 		maxRot = startingRot + new Vector3 (0, 0, angleDiff / 2f);
 		minRot = startingRot + new Vector3 (0, 0, -angleDiff / 2f);
+		StartCoroutine (StartCall ());
 	}
 	
 	// Update is called once per frame
@@ -48,6 +57,13 @@ public class PhoneVibration : MonoBehaviour {
 		hasPressed = true;
 		audio.Stop ();
 		ChangeSprite (2);
+		breathingSounds.isOn = true;
+		if(hasSpawnedObjects == false) {
+			hasSpawnedObjects = true;
+			GameObject newObj = (GameObject) Instantiate (objectivePrefab, new Vector3(0.95f,0.95f,0), Quaternion.identity);
+			newObj.transform.parent = transform.parent;
+			manager.UnlockObjective(newObj.GetComponent<Objectives>());
+		}
 	}
 
 	public void StartVibration(){
@@ -86,6 +102,11 @@ public class PhoneVibration : MonoBehaviour {
 				yield return null;
 			}
 		}
+	}
+
+	IEnumerator StartCall() { //Used to start the call at the start of the game
+		yield return new WaitForSeconds(4f);
+		StartVibration();
 	}
 
 
