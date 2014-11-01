@@ -2,7 +2,8 @@ fileFormatVersion: 2
 guid: eae582cccc401024d96c3a27d115579e
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - MyAwesomeStyle: {fileID: 11400000, guid: 67de4eb13cacc2049823d3f1a7210fa2, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

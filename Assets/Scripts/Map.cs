@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Map : MonoBehaviour {
 
 	public List<GameObject> mapList;
+	public List<GameObject> objList;
 	public int currentMap = -1;
 
 	void Start () {
@@ -28,6 +29,21 @@ public class Map : MonoBehaviour {
 		for(int i=0; i<newSprites.Length; i++) {
 			StartCoroutine(FadeIn (newSprites[i]));
 		}
+		if(currentMap == 2) {
+			GameObject newObj1 = (GameObject) Instantiate (objList[0], Vector3.zero,Quaternion.identity);
+			SpriteRenderer[] newSprites1 = newObj1.GetComponentsInChildren<SpriteRenderer> ();
+			for(int i=0; i<newSprites1.Length; i++) {
+				StartCoroutine(FadeIn (newSprites1[i]));
+			}
+		}
+		if(currentMap == 3) {
+			GameObject newObj2 = (GameObject)Instantiate (objList[1], Vector3.zero,Quaternion.identity);
+			SpriteRenderer[] newSprites2 = newObj2.GetComponentsInChildren<SpriteRenderer> ();
+			for(int i=0; i<newSprites2.Length; i++) {
+				StartCoroutine(FadeIn (newSprites2[i]));
+			}
+		}
+
 	}
 
 	IEnumerator FadeOut(SpriteRenderer sprite){

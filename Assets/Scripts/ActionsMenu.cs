@@ -7,10 +7,11 @@ public class ActionsMenu : MonoBehaviour {
 	public GUISkin MyAwesomeStyle;
 	public List<string> stringsToShow;
 	public Interactable currentInteractable;
+	GameManager manager;
 
 	// Use this for initialization
 	void Start () {
-	
+		manager = GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ();
 	}
 	
 	// Update is called once per frame
@@ -43,7 +44,9 @@ public class ActionsMenu : MonoBehaviour {
 		if(interactable.isOpenable) stringsToShow.Add ("- Open");
 		if(interactable.isBreakable) stringsToShow.Add ("- Break");
 		if(interactable.isUploadable) stringsToShow.Add ("- Upload");
-		
+		if(interactable.canPhone911) stringsToShow.Add ("- Call Police");
+		if(interactable.canPhone911 && interactable.canPhoneNum && manager.found_phoneNumber) stringsToShow.Add ("- Call Found Number");
+		if(interactable.isSecretPassage && manager.called_phoneNumber) stringsToShow.Add ("- Investigate");
 	}
 
 	public void ClearMenu(){

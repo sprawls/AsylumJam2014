@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour {
 	bool unlockedMap = false;
 	bool unlockedObjective = false;
 	bool unlockedTimer = false;
+	[HideInInspector] public bool found_password = false;
+	[HideInInspector] public bool found_key = false;
+	[HideInInspector] public bool found_phoneNumber = false;
+	[HideInInspector] public bool called_phoneNumber = false;
+
 
 	//text Lock
 	public DisplayDialog playerDialog;
@@ -31,6 +36,8 @@ public class GameManager : MonoBehaviour {
 	//Texts
 	public List<List<string>> listsOfPlayerText;
 	public List<List<string>> listsOfOtherText;
+
+
 
 	// Use this for initialization
 	void Start () {
@@ -54,6 +61,10 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	public void StopClock(){
+		timer.StopTimer ();
 	}
 
 	public void UnlockObjective(Objectives newObj) {
@@ -115,6 +126,21 @@ public class GameManager : MonoBehaviour {
 			objectives.RemoveObjective("- Break in the house.");
 		}
 	}
+	public void AddObjective(string nObjective){
+		objectives.AddObjective(nObjective);
+	}
+	public void RemoveObjective(string nObjective){
+		objectives.RemoveObjective(nObjective);
+	}
+
+	public void ShowBadPCDialog(){
+		currentPlayerText = 7;
+		currentOtherText = 6;
+		currentMaxPlayerText = 9;
+		currentOtherText = 7;
+	}
+
+
 
 	//Fuck database, hardcode all text lines
 	void CreateListOfPlayerText(){
@@ -147,6 +173,13 @@ public class GameManager : MonoBehaviour {
 		List<string> player7 = new List<string> ();
 		player7.Add ("I'm in.");
 		listsOfPlayerText.Add (player7);
+		//Dialog Found bad pc
+		List<string> player8 = new List<string> ();
+		listsOfPlayerText.Add (player8);
+		List<string> player9 = new List<string> ();
+		player9.Add ("    . . .");
+		player9.Add ("Alright.");
+		listsOfPlayerText.Add (player9);
 
 	}
 
@@ -186,6 +219,10 @@ public class GameManager : MonoBehaviour {
 		other6.Add ("You have 10 minutes until they're there. You better hurry.");
 		other6.Add ("If you don't get the data until then. You're not seeing your friend in one piece again.");
 		listsOfOtherText.Add (other6);
+		//Dialog Found bad pc
+		List<string> other7 = new List<string> ();
+		other7.Add ("Wronc PC.  Keep looking. Now.");
+		listsOfOtherText.Add (other7);
 	}
 
 }

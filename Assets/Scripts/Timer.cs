@@ -25,6 +25,10 @@ public class Timer : MonoBehaviour {
 		StartCoroutine (CalculateTime());
 	}
 
+	public void StopTimer() {
+		StopAllCoroutines ();
+	}
+
 	IEnumerator CalculateTime(){
 		while(timeLeft >= 0) {
 			timeLeft--;

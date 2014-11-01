@@ -6,6 +6,8 @@ public class Button_GoToHouse : MonoBehaviour {
 	Map map;
 	GameManager manager;
 	SpriteRenderer sprite;
+
+	bool clicked =false;
 	// Use this for initialization
 	void Start () {
 		map = gameObject.GetComponentInParent<Map> ();
@@ -19,10 +21,13 @@ public class Button_GoToHouse : MonoBehaviour {
 	}
 
 	void OnMouseUp() {
-		map.NextMap ();
-		manager.canMakeAction = false;
-		manager.currentMaxPlayerText = 5;
-		manager.currentMaxOtherText = 4;
+		if(clicked == false) {
+			map.NextMap ();
+			manager.canMakeAction = false;
+			manager.currentMaxPlayerText = 5;
+			manager.currentMaxOtherText = 4;
+			clicked = true;
+		}
 	}
 	
 }

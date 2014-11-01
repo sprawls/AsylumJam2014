@@ -9,14 +9,20 @@ public class Interactable : MonoBehaviour {
 	public bool isOpenable = false;
 	public bool isBreakable = false;
 	public bool isUploadable = false;
+	public bool canPhone911 = false;
+	public bool canPhoneNum = false;
+	public bool isSecretPassage = false;
 	//Results
 	public bool hasResult = false;
 	public bool hasScanResult = false;
 	public bool hasOpenResult = false;
+	public bool hasSpecialOpenResult = false;
 	//Changes
 	public bool afterSearch_break = false;
 	public bool afterSearch_open = false;
 	public bool afterSearch_scan = false;
+	public int afterSearch_bonus = -1; // -1:none, 0:password, 1:key, 2:safe, 3: find phone
+
 	//Audio
 	public AudioClip BreakAudioClip;
 
@@ -24,8 +30,11 @@ public class Interactable : MonoBehaviour {
 
 	ActionsMenu menu;
 	GameManager manager;
+	//Prefabs 
 	public GameObject ProgressBarPrefab;
 	public GameObject ProgressResultPrefab;
+	public GameObject PhoneIconPrefab;
+	public GameObject PhoneRingingPrefab;
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +49,10 @@ public class Interactable : MonoBehaviour {
 
 	void CreateResult(string message){
 		TextMesh t= ((GameObject)Instantiate (ProgressResultPrefab, Vector3.zero, Quaternion.identity)).GetComponentInChildren<TextMesh> ();
+		t.text = message;
+	}
+	void CreateResult2(string message){ //For additional message
+		TextMesh t= ((GameObject)Instantiate (ProgressResultPrefab, new Vector3(0,-0.5f,0), Quaternion.identity)).GetComponentInChildren<TextMesh> ();
 		t.text = message;
 	}
 
@@ -57,20 +70,24 @@ public class Interactable : MonoBehaviour {
 		if(amtToAdd > 1 && isOpenable == false) amtToAdd++;
 		if(amtToAdd > 2 && isBreakable == false) amtToAdd++;
 		if(amtToAdd > 3 && isUploadable == false) amtToAdd++;
+		if(amtToAdd > 4 && canPhone911 == false) amtToAdd++;
+		if(amtToAdd > 5 && (canPhoneNum == false || canPhone911==false || manager.found_phoneNumber== false)) amtToAdd++;
+		if(amtToAdd > 6 && isSecretPassage == false) amtToAdd++;
 
 		return (amtToAdd);
 	}
 
 	public void DoAction(int actionToDo){
 		manager.canMakeAction = false;
-		Debug.Log ("Before: " + actionToDo);
 		actionToDo = AdjustIndex (actionToDo);
-		Debug.Log ("After: " + actionToDo);
 		if(actionToDo == 0) Search ();
 		else if(actionToDo == 1) Scan ();
 		else if(actionToDo == 2) Open ();
 		else if(actionToDo == 3) Break ();
 		else if(actionToDo == 4) Upload ();
+		else if(actionToDo == 5) Phone911();
+		else if(actionToDo == 6) Phone();
+		else if(actionToDo == 7) OpenPassage ();
 	}
 
 	void Search(){
@@ -87,6 +104,15 @@ public class Interactable : MonoBehaviour {
 	}
 	void Upload(){
 		StartCoroutine(Upload (8f));
+	}
+	void Phone911(){
+		StartCoroutine (Phone911 (2f));
+	}
+	void Phone(){
+		StartCoroutine (Phone (2f));
+	}
+	void OpenPassage(){
+		StartCoroutine (OpenPassage (3f));
 	}
 
 	IEnumerator Search(float time) {
@@ -111,17 +137,47 @@ public class Interactable : MonoBehaviour {
 				isScanable = true;
 				CreateResult("You find a laptop in a drawer");
 			}
+			if(afterSearch_bonus == 0) {
+				CreateResult("You find a piece of paper in a jacket.");
+				CreateResult2("There is a password written on it.");
+				manager.found_password = true;
+			}
+			if(afterSearch_bonus == 1) {
+				CreateResult("You find key under the sink.");
+				CreateResult2("This will surely be usefull.");
+				manager.found_key = true;
+				manager.AddObjective("- Find a use for the key");
+			}
+			if(afterSearch_bonus == 2) {
+				CreateResult("There is a safe hidden here.");
+				CreateResult2("It needs a key to be opened.");
+				isOpenable = true;
+				hasSpecialOpenResult = true;
+				manager.AddObjective("- Find key to open the safe");
+			}
+			if(afterSearch_bonus == 3) {
+				CreateResult("There is a phone here.");
+				CreateResult2("I can use it if needed.");
+				canPhone911 = true;
+				Instantiate(PhoneIconPrefab, Vector3.zero, Quaternion.identity);
+
+			}
 		} else {
 			CreateResult("Nothing Here");
 		}
 	}
 
 	IEnumerator Scan(float time) {
-		isWaiting = false;
-		StartCoroutine(Wait (time,isWaiting));
-		while(isWaiting==false) {
-			yield return null;
-		} 
+		if(manager.found_password) {
+			manager.found_password = false;
+			CreateResult2("Used Password");
+		} else {
+			isWaiting = false;
+			StartCoroutine(Wait (time,isWaiting));
+			while(isWaiting==false) {
+				yield return null;
+			} 
+		}
 		//then , once wait is over
 		manager.canMakeAction = true;
 		isScanable = false;
@@ -130,7 +186,7 @@ public class Interactable : MonoBehaviour {
 			isUploadable = true;
 		} else {
 			CreateResult("No data in there");
-
+			manager.ShowBadPCDialog();
 		}
 	}
 
@@ -145,9 +201,38 @@ public class Interactable : MonoBehaviour {
 		if(hasOpenResult){
 			CreateResult("You open the door");
 			manager.map.NextMap();
+		} else if(hasSpecialOpenResult){
+			if(manager.found_key) {
+				isOpenable = false;
+				CreateResult("You use the key to open the safe");
+				CreateResult2("There is a phone number and money inside.");
+				manager.RemoveObjective("- Find a use for the key");
+				manager.RemoveObjective("- Find key to open the safe");
+				manager.AddObjective ("- Find a use for the phone number");
+				canPhoneNum = true;
+				manager.found_phoneNumber = true;
+			} else {
+				CreateResult("It needs a key");
+
+			}
+
 		} else {
 			CreateResult("The door is Locked");
 		}
+	}
+
+	IEnumerator OpenPassage(float time) {
+		isWaiting = false;
+		StartCoroutine(Wait (time,isWaiting));
+		while(isWaiting==false) {
+			yield return null;
+		} 
+		//then , once wait is over
+		manager.RemoveObjective ("- Investigate Sound");
+		CreateResult("The ringing is coming from behind");
+		CreateResult2("You discover an hidden room");
+		manager.map.NextMap ();
+		manager.canMakeAction = true;
 	}
 
 	IEnumerator Break(float time) {
@@ -174,10 +259,41 @@ public class Interactable : MonoBehaviour {
 		} 
 		//then , once wait is over
 		manager.canMakeAction = false;
+		CreateResult("Data has been sent");
+		manager.StopClock ();
+	}
+
+	IEnumerator Phone911(float time) {
+		isWaiting = false;
+		StartCoroutine (Wait (time, isWaiting));
+		while(isWaiting == false) {
+			yield return null;
+		}
+		//then , once wait is over
+		manager.canMakeAction = true;
+
+	}
+
+	IEnumerator Phone(float time) {
+		isWaiting = false;
+		StartCoroutine (Wait (time, isWaiting));
+		while(isWaiting == false) {
+			yield return null;
+		}
+		//then , once wait is over
+		manager.canMakeAction = true;
+		manager.called_phoneNumber = true;
+		CreateResult("It's ringing...");
+		GameObject phoneRing = (GameObject)Instantiate (PhoneRingingPrefab, Vector3.zero, Quaternion.identity);
+		phoneRing.transform.parent = manager.map.transform;
+		canPhone911 = false;
+		canPhoneNum = false;
+		manager.RemoveObjective ("- Find a use for the phone number");
+		manager.AddObjective ("- Investigate Sound");
 	}
 
 	IEnumerator Wait(float time, bool  ToMakeTrue){
-		ProgressBar timerBar = ((GameObject)Instantiate (ProgressBarPrefab, transform.position + new Vector3 (0, 1, 0), Quaternion.identity)).GetComponentInChildren<ProgressBar>();
+		ProgressBar timerBar = ((GameObject)Instantiate (ProgressBarPrefab, transform.position + new Vector3 (0, 0.5f, 0), Quaternion.identity)).GetComponentInChildren<ProgressBar>();
 		timerBar.StartTimer (time);
 		yield return new WaitForSeconds (time);
 		isWaiting = true;

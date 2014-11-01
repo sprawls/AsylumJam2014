@@ -7,6 +7,7 @@ MonoImporter:
   - ProgressBarPrefab: {fileID: 100002, guid: 1db9a57c088cafb43bee721c4ced698e, type: 2}
   - ProgressResultPrefab: {fileID: 100002, guid: 0ce624f1c3ac9c646a31ca2c364b9f28,
       type: 2}
+  - PhoneIconPrefab: {fileID: 100000, guid: 834112bdfb1d6e14ca415fb383f18222, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
