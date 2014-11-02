@@ -257,7 +257,7 @@ public class GameManager : MonoBehaviour {
 		listsOfOtherText.Add (other0);
 		List<string> other1 = new List<string> ();
 		other1.Add ("That's not important. Now Listen to me.");
-		other1.Add ("The person you hear behind me is indeed Alex.");
+		other1.Add ("The person you hear beside me is indeed your friend.");
 		other1.Add ("Just listen to me, and everyone will be alright.");
 		other1.Add ("Do everything as I say.");
 		other1.Add ("First, Do not hang up.");
@@ -283,7 +283,7 @@ public class GameManager : MonoBehaviour {
 		listsOfOtherText.Add (other5);
 		List<string> other6 = new List<string> ();
 		other6.Add ("No shit. The police is coming now.");
-		other6.Add ("You have 10 minutes until they're there. You better hurry.");
+		other6.Add ("You have about six minutes until they're there. You better hurry.");
 		other6.Add ("If you don't get the data until then. You're not seeing your friend in one piece again.");
 		listsOfOtherText.Add (other6);
 		//Dialog Found bad pc

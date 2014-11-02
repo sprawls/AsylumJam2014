@@ -4,7 +4,7 @@ using System.Collections;
 public class Timer : MonoBehaviour {
 
 	public GUISkin MyAwesomeStyle;
-	public int startingTime = 600; //time at start
+	public int startingTime = 340; //time at start
 	int timeLeft; //in seconds
 
 	//Sounds

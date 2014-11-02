@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class PhoneVibration : MonoBehaviour {
 
+	public GameObject text1;
+	public GameObject text2;
+
 	public AudioClip Clip_Confirm;
 	public GameManager manager;
 	public List<Sprite> spriteList; //0 : nothing, 1 : incoming call, 2 : in call
@@ -60,12 +63,15 @@ public class PhoneVibration : MonoBehaviour {
 		ChangeSprite (2);
 		breathingSounds.isOn = true;
 		if(hasSpawnedObjects == false) {
+			text1.SetActive(true);
+			text2.SetActive(true);
 			hasSpawnedObjects = true;
 			GameObject newObj = (GameObject) Instantiate (objectivePrefab, new Vector3(0.95f,0.95f,0), Quaternion.identity);
 			newObj.transform.parent = transform.parent;
 			manager.UnlockObjective(newObj.GetComponent<Objectives>());
+			audio.PlayOneShot (Clip_Confirm);
 		}
-		audio.PlayOneShot (Clip_Confirm);
+	
 	}
 
 	public void StartVibration(){
