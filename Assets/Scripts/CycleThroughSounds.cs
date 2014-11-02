@@ -30,6 +30,12 @@ public class CycleThroughSounds : MonoBehaviour {
 		}
 	}
 
+	public void CloseCall() {
+		audio.volume = 0f;
+		audio.Stop();
+		transform.parent.gameObject.GetComponent<PhoneVibration> ().ChangeSprite (3);
+	}
+
 	IEnumerator WaitForSounds(float lenght){
 		isCurrentlyPlaying = true;
 		yield return new WaitForSeconds (lenght);

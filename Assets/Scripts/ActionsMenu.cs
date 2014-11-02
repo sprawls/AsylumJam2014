@@ -9,8 +9,14 @@ public class ActionsMenu : MonoBehaviour {
 	public Interactable currentInteractable;
 	GameManager manager;
 
+	//Audio
+	AudioSource audioSource;
+	AudioClip action;
+
 	// Use this for initialization
 	void Start () {
+		audioSource = gameObject.AddComponent<AudioSource> ();
+		action = (AudioClip)Resources.Load ("confirm_1");
 		manager = GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ();
 	}
 	
@@ -47,10 +53,15 @@ public class ActionsMenu : MonoBehaviour {
 		if(interactable.canPhone911) stringsToShow.Add ("- Call Police");
 		if(interactable.canPhone911 && interactable.canPhoneNum && manager.found_phoneNumber) stringsToShow.Add ("- Call Found Number");
 		if(interactable.isSecretPassage && manager.called_phoneNumber) stringsToShow.Add ("- Investigate");
+
+		//sounds
+		if(stringsToShow.Count > 0) audioSource.PlayOneShot(action);
 	}
 
 	public void ClearMenu(){
 		stringsToShow.Clear ();
 		currentInteractable = null;
 	}
+
+	//TODO : LErp color everytime we generate a menu ++FEEDBACK
 }

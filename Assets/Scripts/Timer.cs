@@ -7,7 +7,16 @@ public class Timer : MonoBehaviour {
 	public int startingTime = 600; //time at start
 	int timeLeft; //in seconds
 
+	//Sounds
+	AudioSource audioSource;
+	AudioClip tick;
+
+
 	void Start () {
+		audioSource = gameObject.AddComponent<AudioSource> ();
+		audioSource.volume = 0.7f;
+		tick = (AudioClip)Resources.Load ("tick_1");
+
 		timeLeft = startingTime;
 		StartTimer ();
 	}
@@ -31,6 +40,8 @@ public class Timer : MonoBehaviour {
 
 	IEnumerator CalculateTime(){
 		while(timeLeft >= 0) {
+			audioSource.pitch = Random.Range (0.95f,1.05f);
+			audioSource.PlayOneShot(tick);
 			timeLeft--;
 			yield return new WaitForSeconds(1f);
 		}

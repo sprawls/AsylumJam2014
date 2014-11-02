@@ -24,7 +24,14 @@ public class Interactable : MonoBehaviour {
 	public int afterSearch_bonus = -1; // -1:none, 0:password, 1:key, 2:safe, 3: find phone
 
 	//Audio
+	AudioSource myAudio;
 	public AudioClip BreakAudioClip;
+	AudioClip confirm_1;
+	AudioClip confirm_2;
+	AudioClip search_fail;
+	AudioClip sliding;
+	AudioClip dialtone;
+	AudioClip dialtone_police;
 
 	bool isWaiting = false;
 
@@ -38,8 +45,15 @@ public class Interactable : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		myAudio = gameObject.AddComponent<AudioSource>();
 		menu = GameObject.FindGameObjectWithTag ("ActionMenu").GetComponent<ActionsMenu> ();
 		manager = GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ();
+		confirm_1 = (AudioClip)Resources.Load ("confirm_1");
+		confirm_2 = (AudioClip)Resources.Load ("confirm_2");
+		search_fail = (AudioClip)Resources.Load ("search_fail");
+		sliding = (AudioClip)Resources.Load ("sliding");
+		dialtone = (AudioClip)Resources.Load ("dialtone");
+		dialtone_police = (AudioClip)Resources.Load ("dialtone_police");
 	}
 	
 	// Update is called once per frame
@@ -91,27 +105,35 @@ public class Interactable : MonoBehaviour {
 	}
 
 	void Search(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine(Search (4f));
 	}
 	void Scan(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine(Scan (8f));
 	}
 	void Open(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine(Open (2f));
 	}
 	void Break(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine(Break (2f));
 	}
 	void Upload(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine(Upload (8f));
 	}
 	void Phone911(){
-		StartCoroutine (Phone911 (2f));
+		myAudio.PlayOneShot (confirm_1);
+		StartCoroutine (Phone911 (4f));
 	}
 	void Phone(){
-		StartCoroutine (Phone (2f));
+		myAudio.PlayOneShot (confirm_1);
+		StartCoroutine (Phone (4f));
 	}
 	void OpenPassage(){
+		myAudio.PlayOneShot (confirm_1);
 		StartCoroutine (OpenPassage (3f));
 	}
 
@@ -126,6 +148,7 @@ public class Interactable : MonoBehaviour {
 		manager.canMakeAction = true;
 		isSearchable = false;
 		if(hasResult) {
+			myAudio.PlayOneShot (confirm_2);
 			if(afterSearch_break) {
 				isBreakable = true;
 				CreateResult("This window lead to the living room");
@@ -163,6 +186,7 @@ public class Interactable : MonoBehaviour {
 
 			}
 		} else {
+			myAudio.PlayOneShot(search_fail);
 			CreateResult("Nothing Here");
 		}
 	}
@@ -229,6 +253,7 @@ public class Interactable : MonoBehaviour {
 			yield return null;
 		} 
 		//then , once wait is over
+		myAudio.PlayOneShot(sliding);
 		manager.RemoveObjective ("- Investigate Sound");
 		CreateResult("The ringing is coming from behind");
 		CreateResult2("You discover an hidden room");
@@ -244,7 +269,6 @@ public class Interactable : MonoBehaviour {
 		} 
 		//then , once wait is over
 		manager.map.NextMap ();
-		AudioSource myAudio = gameObject.AddComponent<AudioSource>();
 		myAudio.PlayOneShot (BreakAudioClip);
 		manager.CreateTimer ();
 		manager.currentMaxPlayerText = 7;
@@ -262,9 +286,12 @@ public class Interactable : MonoBehaviour {
 		manager.canMakeAction = false;
 		CreateResult("Data has been sent");
 		manager.StopClock ();
+		manager.ShowUploadDialog ();
+
 	}
 
 	IEnumerator Phone911(float time) {
+		myAudio.PlayOneShot (dialtone_police);
 		isWaiting = false;
 		StartCoroutine (Wait (time, isWaiting));
 		while(isWaiting == false) {
@@ -276,6 +303,7 @@ public class Interactable : MonoBehaviour {
 	}
 
 	IEnumerator Phone(float time) {
+		myAudio.PlayOneShot (dialtone);
 		isWaiting = false;
 		StartCoroutine (Wait (time, isWaiting));
 		while(isWaiting == false) {

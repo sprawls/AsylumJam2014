@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-	Timer timer;
+	public Timer timer;
 	public GameObject Timer_Obj;
 
 
@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour {
 		unlockedObjective = true;
 	}
 	public void CreateTimer(){
-		timer = ((GameObject)Instantiate (Timer_Obj, Vector3.zero, Quaternion.identity)).GetComponent<Timer> ();
+		timer = ((GameObject)Instantiate (Timer_Obj, Vector3.zero, Quaternion.identity)).GetComponentInChildren<Timer> ();
 	}
 
 	bool LookForPlayerDialog(){
@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour {
 			objectives.AddObjective("- Find the data");
 			objectives.RemoveObjective("- Break in the house.");
 		}
-		if(currentPlayerText == 11) {
+		if(currentPlayerText == 11 && currentOtherText == 9) {
 			audio.PlayOneShot (clip_stab);
 			breathSounds.audio.volume = 1f;
 		}
@@ -141,8 +141,7 @@ public class GameManager : MonoBehaviour {
 			canMakeAction = true;
 		}
 		if(currentOtherText == 12) {
-			breathSounds.audio.volume = 0f;
-			breathSounds.audio.Stop();
+			breathSounds.CloseCall();
 			audio.PlayOneShot (clip_phoneError);
 		}
 		if(currentPlayerText == 16) {
@@ -254,7 +253,7 @@ public class GameManager : MonoBehaviour {
 	void CreateListOfOtherText(){
 		listsOfOtherText = new List<List<string>> ();
 		List<string> other0 = new List<string> ();
-		other0.Add ("Hello " + playerName + ".");
+		other0.Add ("Hello there.");
 		listsOfOtherText.Add (other0);
 		List<string> other1 = new List<string> ();
 		other1.Add ("That's not important. Now Listen to me.");

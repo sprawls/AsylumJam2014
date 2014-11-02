@@ -21,6 +21,11 @@ public class DisplayDialog : MonoBehaviour {
 	bool canClickSkip = true; //if false cant click (delay to avoid double clicks!)
 	public bool isInactive = true;
 	public bool NeedToSwitch = false;
+
+	//audio
+	AudioSource audioSource;
+	AudioClip keyPress;
+	bool hasPlayedSound = false; //bool used not to repeat sound too fast when skipping
 	
 	void Awake() {
 		guiText = gameObject.GetComponent<GUIText> ();
@@ -28,7 +33,9 @@ public class DisplayDialog : MonoBehaviour {
 	}
 	
 	void Start () {
-	
+		audioSource = (AudioSource)gameObject.AddComponent<AudioSource> ();
+		keyPress = (AudioClip)Resources.Load ("keyPress");
+
 	}
 
 	void Update() {
@@ -72,6 +79,13 @@ public class DisplayDialog : MonoBehaviour {
 		for(int i=0; i< myString.Length; i++) {
 			currentText += myString[i];
 			guiText.text = currentText;
+			//PlaySound
+			if(myString[i] != ' ' && hasPlayedSound == false) {
+				audioSource.volume = Random.Range (0.6f,0.7f);
+				audioSource.pitch = Random.Range (0.85f,1.15f);
+				audioSource.PlayOneShot(keyPress);
+				StartCoroutine (CheckSound());
+			}
 			
 			if(wantToSkip == false) yield return new WaitForSeconds(charDelay); //if want to skip, dont do delay
 			else yield return null;
@@ -98,6 +112,12 @@ public class DisplayDialog : MonoBehaviour {
 		canClickSkip = false;
 		yield return new WaitForSeconds(0.1f);
 		canClickSkip = true;
+	}
+
+	IEnumerator CheckSound(){
+		hasPlayedSound = true;
+		yield return new WaitForSeconds(0.035f);
+		hasPlayedSound = false;
 	}
 
 	
