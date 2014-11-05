@@ -6,6 +6,7 @@ public class ActionsMenu : MonoBehaviour {
 
 	public GUISkin MyAwesomeStyle;
 	public List<string> stringsToShow;
+	public List<string> currentlyShowing;
 	public Interactable currentInteractable;
 	GameManager manager;
 
@@ -26,10 +27,10 @@ public class ActionsMenu : MonoBehaviour {
 	}
 
 	void OnGUI(){
-		if(stringsToShow.Count > 0) {
+		if(currentlyShowing.Count > 0) {
 			GUI.Label (new Rect(5*Screen.width/8 - 60, 130, Screen.width/8f,50), "Actions : ",MyAwesomeStyle.customStyles[0]);
-			for (int i =0; i<stringsToShow.Count; i++) {
-				if(GUI.Button (new Rect(5*Screen.width/8 -30, 160 + 22*i, Screen.width/8f,22), stringsToShow[i],MyAwesomeStyle.customStyles[3])) {
+			for (int i =0; i<currentlyShowing.Count; i++) {
+				if(GUI.Button (new Rect(5*Screen.width/8 -30, 160 + 22*i, Screen.width/8f,22), currentlyShowing[i],MyAwesomeStyle.customStyles[3])) {
 					ReturnAction(i);
 				}
 			}
@@ -54,14 +55,33 @@ public class ActionsMenu : MonoBehaviour {
 		if(interactable.canPhone911 && interactable.canPhoneNum && manager.found_phoneNumber) stringsToShow.Add ("- Call Found Number");
 		if(interactable.isSecretPassage && manager.called_phoneNumber) stringsToShow.Add ("- Investigate");
 
+		StartAnimation ();
 		//sounds
 		if(stringsToShow.Count > 0) audioSource.PlayOneShot(action);
 	}
 
 	public void ClearMenu(){
-		stringsToShow.Clear ();
 		currentInteractable = null;
+		stringsToShow.Clear ();
+		StartAnimation ();
 	}
 
-	//TODO : LErp color everytime we generate a menu ++FEEDBACK
+	public void StartAnimation(){
+		StopAllCoroutines ();
+		StartCoroutine (AnimateText ());
+	}
+	
+	IEnumerator AnimateText(){
+		float timeBetweenShow = 0.2f;
+		currentlyShowing.Clear ();
+		yield return new WaitForSeconds(timeBetweenShow);
+		if(stringsToShow.Count > 0) currentlyShowing.Add ("");
+		yield return new WaitForSeconds(timeBetweenShow);
+		currentlyShowing.Clear ();
+		for(int i = 0; i<stringsToShow.Count; i++) {
+			currentlyShowing.Add (stringsToShow[i]);
+			yield return new WaitForSeconds(timeBetweenShow);
+		}
+	}
+	
 }

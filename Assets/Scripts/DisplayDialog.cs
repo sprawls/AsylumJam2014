@@ -11,11 +11,11 @@ public class DisplayDialog : MonoBehaviour {
 	public float charDelay = 0.08f; //Delay between characters appeareance
 	
 	string currentText;
-	GUIText guiText;
+	GUIText GuiText;
 	
 	
-	int currentString = 0; //Current String of the list
-	int currentChar = 0; //Current Char of the String
+	//int currentString = 0; //Current String of the list
+	//int currentChar = 0; //Current Char of the String
 	bool StringShown = false; //is the current string finished showing
 	bool wantToSkip = false; //If true, skip text if possible
 	bool canClickSkip = true; //if false cant click (delay to avoid double clicks!)
@@ -28,14 +28,14 @@ public class DisplayDialog : MonoBehaviour {
 	bool hasPlayedSound = false; //bool used not to repeat sound too fast when skipping
 	
 	void Awake() {
-		guiText = gameObject.GetComponent<GUIText> ();
+		GuiText = gameObject.GetComponent<GUIText> ();
 		manager = gameObject.GetComponentInParent<GameManager> ();
 	}
 	
 	void Start () {
 		audioSource = (AudioSource)gameObject.AddComponent<AudioSource> ();
 		keyPress = (AudioClip)Resources.Load ("keyPress");
-
+		if(manager == null) StartText ();
 	}
 
 	void Update() {
@@ -55,8 +55,7 @@ public class DisplayDialog : MonoBehaviour {
 	public void StartText(){
 		isInactive = false;
 		StringShown = false;
-		currentString = 0;
-		currentChar = 0;
+
 		StartCoroutine (ShowText ());
 	}
 	
@@ -78,7 +77,7 @@ public class DisplayDialog : MonoBehaviour {
 		wantToSkip = false;
 		for(int i=0; i< myString.Length; i++) {
 			currentText += myString[i];
-			guiText.text = currentText;
+			GuiText.text = currentText;
 			//PlaySound
 			if(myString[i] != ' ' && hasPlayedSound == false) {
 				audioSource.volume = Random.Range (0.6f,0.7f);

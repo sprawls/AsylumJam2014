@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour {
 	Objectives objectives;
 	CycleThroughSounds breathSounds;
 	[HideInInspector] public Map map;
+	public GameObject Tutorial_Prefab;
 
 
 	public string playerName = "Patrick";
@@ -21,14 +22,17 @@ public class GameManager : MonoBehaviour {
 	public AudioClip clip_police;
 
 	//unlocks
+	bool hasCalledGG = false;
 	bool unlockedMap = false;
 	bool unlockedObjective = false;
-	bool unlockedTimer = false;
+	[HideInInspector] public bool unlockedTimer = false;
 	[HideInInspector] public bool found_password = false;
 	[HideInInspector] public bool found_key = false;
 	[HideInInspector] public bool found_phoneNumber = false;
 	[HideInInspector] public bool called_phoneNumber = false;
-
+	[HideInInspector] public bool called_police = false;
+	[HideInInspector] public bool has_clicked_open_door = false;
+	[HideInInspector] public bool has_tried_opening_front_door = false;
 
 	//text Lock
 	public DisplayDialog playerDialog;
@@ -69,6 +73,11 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
+		//Look for ending
+		if(timer != null && timer.timeLeft <= 0) {
+			StartCoroutine (GG());
+		}
+
 	}
 
 	public void StopClock(){
@@ -81,6 +90,7 @@ public class GameManager : MonoBehaviour {
 	}
 	public void CreateTimer(){
 		timer = ((GameObject)Instantiate (Timer_Obj, Vector3.zero, Quaternion.identity)).GetComponentInChildren<Timer> ();
+		unlockedTimer = true;
 	}
 
 	bool LookForPlayerDialog(){
@@ -125,6 +135,7 @@ public class GameManager : MonoBehaviour {
 			canMakeAction = true;
 			objectives.AddObjective("- Break in the house.");
 			objectives.RemoveObjective("- Go to the given address");
+			Instantiate (Tutorial_Prefab);
 		}
 		if(currentUnlock == 2 && currentPlayerText > 7) {
 			currentUnlock++;
@@ -146,6 +157,7 @@ public class GameManager : MonoBehaviour {
 		}
 		if(currentPlayerText == 16) {
 			audio.PlayOneShot (clip_police);
+			StartCoroutine(GoodGG());
 		}
 
 
@@ -311,6 +323,28 @@ public class GameManager : MonoBehaviour {
 		other11.Add ("Thank you. And Goodbye.      ");
 		listsOfOtherText.Add (other11);
 
+	}
+
+	IEnumerator GG(){
+		if(hasCalledGG == false) {
+			hasCalledGG = true;
+			canMakeAction = false;
+			audio.PlayOneShot (clip_phoneError);
+			yield return new WaitForSeconds(2f);
+			audio.PlayOneShot (clip_police);
+			yield return new WaitForSeconds(5f);
+			Application.LoadLevel (3);
+		}
+		yield return null;
+	}
+
+	IEnumerator GoodGG(){ //Or bad
+		if(hasCalledGG == false) {
+			hasCalledGG = true;
+			yield return new WaitForSeconds(5f);
+			Application.LoadLevel (2);
+		}
+		yield return null;
 	}
 
 }

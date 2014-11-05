@@ -5,7 +5,7 @@ public class Timer : MonoBehaviour {
 
 	public GUISkin MyAwesomeStyle;
 	public int startingTime = 340; //time at start
-	int timeLeft; //in seconds
+	public int timeLeft; //in seconds
 
 	//Sounds
 	AudioSource audioSource;
@@ -23,11 +23,15 @@ public class Timer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 	}
 
 	void OnGUI(){
-		GUI.Label (new Rect(6*Screen.width/8 - 30, 30, Screen.width/8f,50), "Time Left   " + timeLeft/60 + " : " + timeLeft%60,MyAwesomeStyle.customStyles[2]);
-
+		int minutes = timeLeft / 60;
+		int seconds = timeLeft % 60;
+		if(seconds<10) GUI.Label (new Rect(6*Screen.width/8 - 30, 30, Screen.width/8f,50), "Time Left   " + timeLeft/60 + " : " + "0" + timeLeft%60,MyAwesomeStyle.customStyles[2]);
+		else GUI.Label (new Rect(6*Screen.width/8 - 30, 30, Screen.width/8f,50), "Time Left   " + timeLeft/60 + " : " + timeLeft%60,MyAwesomeStyle.customStyles[2]);
+		
 	}
 
 	public void StartTimer() {
@@ -39,7 +43,7 @@ public class Timer : MonoBehaviour {
 	}
 
 	IEnumerator CalculateTime(){
-		while(timeLeft >= 0) {
+		while(timeLeft > 0) {
 			audioSource.pitch = Random.Range (0.95f,1.05f);
 			audioSource.PlayOneShot(tick);
 			timeLeft--;

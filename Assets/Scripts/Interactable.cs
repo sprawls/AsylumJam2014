@@ -1,7 +1,14 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Interactable : MonoBehaviour {
+
+
+	//Colors
+	private Color defColor = new Color(1,1,1,1);
+	private Color UsedColor = new Color(0.85f,0.85f,0.85f,0.6f);
+	private bool isUsed = false;
 
 	//Actions
 	public bool isSearchable = false;
@@ -34,9 +41,11 @@ public class Interactable : MonoBehaviour {
 	AudioClip dialtone_police;
 
 	bool isWaiting = false;
+	bool isPoping = false;
 
 	ActionsMenu menu;
 	GameManager manager;
+	SpriteRenderer[] mySprites;
 	//Prefabs 
 	public GameObject ProgressBarPrefab;
 	public GameObject ProgressResultPrefab;
@@ -45,6 +54,7 @@ public class Interactable : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		mySprites = gameObject.GetComponentsInChildren<SpriteRenderer> ();
 		myAudio = gameObject.AddComponent<AudioSource>();
 		menu = GameObject.FindGameObjectWithTag ("ActionMenu").GetComponent<ActionsMenu> ();
 		manager = GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ();
@@ -54,6 +64,7 @@ public class Interactable : MonoBehaviour {
 		sliding = (AudioClip)Resources.Load ("sliding");
 		dialtone = (AudioClip)Resources.Load ("dialtone");
 		dialtone_police = (AudioClip)Resources.Load ("dialtone_police");
+		StartCoroutine (CheckColorLater ());
 	}
 	
 	// Update is called once per frame
@@ -73,8 +84,52 @@ public class Interactable : MonoBehaviour {
 	void OnMouseUp() {
 		if(manager.canMakeAction == true) {
 			menu.SetNewMenu (this);
+			if(isPoping==false && isUsed == false) {
+				for(int i=0; i< mySprites.Length; i++){
+					StartCoroutine(Pop(mySprites[i]));
+				}
+			}
+			//tuto
+			if(isOpenable == true) manager.has_clicked_open_door = true;
 		}
 
+	}
+
+	IEnumerator Pop(SpriteRenderer mySprite) {
+		isPoping = true;
+		Vector3 startScale = mySprite.transform.localScale;
+		Vector3 endScale = new Vector3 (startScale.x + 0.2f, startScale.y + 0.2f, startScale.z + 0.2f);
+		for(float i=0; i < 1f; i+= Time.deltaTime/0.10f) {
+			mySprite.transform.localScale = Vector3.Lerp(startScale,endScale,i);
+			yield return null;
+		}
+		for(float i=0; i < 1f; i+= Time.deltaTime/0.05f) {
+			mySprite.transform.localScale = Vector3.Lerp(endScale,startScale,i);
+			yield return null;
+		}
+		isPoping = false;
+	}
+
+	void CheckColor(){
+		if(isSearchable == false &&
+		   isScanable == false &&
+		   isOpenable == false &&
+		   isBreakable == false &&
+		   isUploadable == false &&
+		   canPhone911 == false &&
+		   canPhoneNum == false &&
+		   isSecretPassage == false )
+		{
+			for(int i=0; i< mySprites.Length; i++){
+				mySprites[i].color = UsedColor;
+			}
+			isUsed = true;
+		} else {
+			for(int i=0; i< mySprites.Length; i++){
+				mySprites[i].color = defColor;
+			}
+			isUsed = false;
+		}
 	}
 
 	int AdjustIndex(int actionToDo){
@@ -126,7 +181,12 @@ public class Interactable : MonoBehaviour {
 	}
 	void Phone911(){
 		myAudio.PlayOneShot (confirm_1);
-		StartCoroutine (Phone911 (4f));
+		if(manager.called_police == false) {
+			StartCoroutine (Phone911 (4f));
+		} else {
+			CreateResult("I'm not calling the police again");
+			manager.canMakeAction = true;
+		}
 	}
 	void Phone(){
 		myAudio.PlayOneShot (confirm_1);
@@ -152,6 +212,7 @@ public class Interactable : MonoBehaviour {
 			if(afterSearch_break) {
 				isBreakable = true;
 				CreateResult("This window lead to the living room");
+				CreateResult2("You could break it");
 			}
 			if(afterSearch_open) {
 				isOpenable = true;
@@ -189,6 +250,7 @@ public class Interactable : MonoBehaviour {
 			myAudio.PlayOneShot(search_fail);
 			CreateResult("Nothing Here");
 		}
+		CheckColor ();
 	}
 
 	IEnumerator Scan(float time) {
@@ -213,6 +275,7 @@ public class Interactable : MonoBehaviour {
 			CreateResult("No data in there");
 			manager.ShowBadPCDialog();
 		}
+		CheckColor ();
 	}
 
 	IEnumerator Open(float time) {
@@ -242,8 +305,11 @@ public class Interactable : MonoBehaviour {
 			}
 
 		} else {
+			isOpenable = false;
+			manager.has_tried_opening_front_door = true;
 			CreateResult("The door is Locked");
 		}
+		CheckColor ();
 	}
 
 	IEnumerator OpenPassage(float time) {
@@ -259,6 +325,7 @@ public class Interactable : MonoBehaviour {
 		CreateResult2("You discover an hidden room");
 		manager.map.NextMap ();
 		manager.canMakeAction = true;
+		CheckColor ();
 	}
 
 	IEnumerator Break(float time) {
@@ -273,7 +340,7 @@ public class Interactable : MonoBehaviour {
 		manager.CreateTimer ();
 		manager.currentMaxPlayerText = 7;
 		manager.currentMaxOtherText = 6;
-
+		CheckColor ();
 	}
 
 	IEnumerator Upload(float time) {
@@ -287,7 +354,7 @@ public class Interactable : MonoBehaviour {
 		CreateResult("Data has been sent");
 		manager.StopClock ();
 		manager.ShowUploadDialog ();
-
+		CheckColor ();
 	}
 
 	IEnumerator Phone911(float time) {
@@ -299,7 +366,8 @@ public class Interactable : MonoBehaviour {
 		}
 		//then , once wait is over
 		manager.ShowPoliceDialog ();
-
+		manager.called_police = true;
+		CheckColor ();
 	}
 
 	IEnumerator Phone(float time) {
@@ -319,6 +387,7 @@ public class Interactable : MonoBehaviour {
 		canPhoneNum = false;
 		manager.RemoveObjective ("- Find a use for the phone number");
 		manager.AddObjective ("- Investigate Sound");
+		CheckColor ();
 	}
 
 	IEnumerator Wait(float time, bool  ToMakeTrue){
@@ -326,6 +395,11 @@ public class Interactable : MonoBehaviour {
 		timerBar.StartTimer (time);
 		yield return new WaitForSeconds (time);
 		isWaiting = true;
+		menu.ClearMenu ();
 	}
 
+	IEnumerator CheckColorLater(){
+		yield return new WaitForSeconds(2f);
+		CheckColor();
+	}
 }

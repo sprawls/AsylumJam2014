@@ -3,7 +3,7 @@ using System.Collections;
 
 public class FadeMessage : MonoBehaviour {
 
-	float time = 1f;
+	float time = 1.5f;
 	SpriteRenderer sprite;
 	TextMesh mesh;
 
