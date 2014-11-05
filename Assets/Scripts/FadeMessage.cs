@@ -43,7 +43,7 @@ public class FadeMessage : MonoBehaviour {
 	}
 	
 	IEnumerator FadeIn(SpriteRenderer sprite){
-		Color endColor = new Color(sprite.color.r,sprite.color.g,sprite.color.b,0.5f);
+		Color endColor = new Color(sprite.color.r,sprite.color.g,sprite.color.b,0.7f);
 		Color startColor = new Color (endColor.r, endColor.g, endColor.b, 0);
 		for(float i = 0; i < 1f; i += Time.deltaTime/time) {
 			sprite.color = Color.Lerp(startColor,endColor,i);

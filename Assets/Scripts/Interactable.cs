@@ -50,6 +50,8 @@ public class Interactable : MonoBehaviour {
 	public GameObject ProgressBarPrefab;
 	public GameObject ProgressResultPrefab;
 	public GameObject PhoneIconPrefab;
+	public GameObject SafeIconPrefab;
+	public GameObject PcIconPrefab;
 	public GameObject PhoneRingingPrefab;
 
 	// Use this for initialization
@@ -220,6 +222,8 @@ public class Interactable : MonoBehaviour {
 			if(afterSearch_scan) {
 				isScanable = true;
 				CreateResult("You find a laptop in a drawer");
+				Instantiate(PcIconPrefab, Vector3.zero, Quaternion.identity);
+
 			}
 			if(afterSearch_bonus == 0) {
 				CreateResult("You find a piece of paper in a jacket.");
@@ -238,6 +242,7 @@ public class Interactable : MonoBehaviour {
 				isOpenable = true;
 				hasSpecialOpenResult = true;
 				manager.AddObjective("- Find key to open the safe");
+				Instantiate(SafeIconPrefab, Vector3.zero, Quaternion.identity);
 			}
 			if(afterSearch_bonus == 3) {
 				CreateResult("There is a phone here.");
