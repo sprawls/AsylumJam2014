@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
 	bool unlockedMap = false;
 	bool unlockedObjective = false;
 	[HideInInspector] public bool unlockedTimer = false;
-	[HideInInspector] public bool found_password = false;
+	[HideInInspector] public int found_password = 0;
 	[HideInInspector] public bool found_key = false;
 	[HideInInspector] public bool found_phoneNumber = false;
 	[HideInInspector] public bool called_phoneNumber = false;
@@ -323,6 +323,10 @@ public class GameManager : MonoBehaviour {
 		other11.Add ("Thank you. And Goodbye.      ");
 		listsOfOtherText.Add (other11);
 
+	}
+
+	public void SendHighScore(){
+		KongAPI.KongregateAPI.Submit ("time", timer.timeLeft);
 	}
 
 	IEnumerator GG(){

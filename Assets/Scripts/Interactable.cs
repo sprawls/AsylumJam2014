@@ -222,13 +222,14 @@ public class Interactable : MonoBehaviour {
 			if(afterSearch_scan) {
 				isScanable = true;
 				CreateResult("You find a laptop in a drawer");
-				Instantiate(PcIconPrefab, Vector3.zero, Quaternion.identity);
-
+				GameObject go = (GameObject) Instantiate(PcIconPrefab, Vector3.zero, Quaternion.identity);
+				go.transform.parent = transform;
 			}
 			if(afterSearch_bonus == 0) {
-				CreateResult("You find a piece of paper in a jacket.");
+				CreateResult("You find a piece of paper");
 				CreateResult2("There is a password written on it.");
-				manager.found_password = true;
+				manager.AddObjective ("- Use password to bypass scan.");
+				manager.found_password ++;
 			}
 			if(afterSearch_bonus == 1) {
 				CreateResult("You find key under the sink.");
@@ -242,13 +243,15 @@ public class Interactable : MonoBehaviour {
 				isOpenable = true;
 				hasSpecialOpenResult = true;
 				manager.AddObjective("- Find key to open the safe");
-				Instantiate(SafeIconPrefab, Vector3.zero, Quaternion.identity);
+				GameObject go = (GameObject) Instantiate(SafeIconPrefab, Vector3.zero, Quaternion.identity);
+				go.transform.parent = transform;
 			}
 			if(afterSearch_bonus == 3) {
 				CreateResult("There is a phone here.");
 				CreateResult2("I can use it if needed.");
 				canPhone911 = true;
-				Instantiate(PhoneIconPrefab, Vector3.zero, Quaternion.identity);
+				GameObject go = (GameObject) Instantiate(PhoneIconPrefab, Vector3.zero, Quaternion.identity);
+				go.transform.parent = transform;
 
 			}
 		} else {
@@ -259,9 +262,10 @@ public class Interactable : MonoBehaviour {
 	}
 
 	IEnumerator Scan(float time) {
-		if(manager.found_password) {
-			manager.found_password = false;
+		if(manager.found_password > 0) {
+			manager.found_password--;
 			CreateResult2("Used Password");
+			manager.RemoveObjective ("- Use password to bypass scan.");
 		} else {
 			isWaiting = false;
 			StartCoroutine(Wait (time,isWaiting));
@@ -302,7 +306,7 @@ public class Interactable : MonoBehaviour {
 				manager.RemoveObjective("- Find a use for the key");
 				manager.RemoveObjective("- Find key to open the safe");
 				manager.AddObjective ("- Find a use for the phone number");
-				canPhoneNum = true;
+				//canPhoneNum = true;
 				manager.found_phoneNumber = true;
 			} else {
 				CreateResult("It needs a key");
@@ -358,6 +362,7 @@ public class Interactable : MonoBehaviour {
 		manager.canMakeAction = false;
 		CreateResult("Data has been sent");
 		manager.StopClock ();
+		manager.SendHighScore ();
 		manager.ShowUploadDialog ();
 		CheckColor ();
 	}
